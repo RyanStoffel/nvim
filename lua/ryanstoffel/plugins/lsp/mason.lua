@@ -1,3 +1,4 @@
+-- Update your existing lua/ryanstoffel/plugins/lsp/mason.lua
 return {
   "williamboman/mason.nvim",
   dependencies = {
@@ -50,7 +51,9 @@ return {
         "jdtls",          -- Java (Requires a JDK to be installed)
         "html",           -- HTML (Often provided by vscode-html-languageserver-bin)
         "cssls",          -- CSS (Often provided by vscode-css-languageserver-bin)
-        "tsserver",       -- TypeScript, JavaScript, React, Next.js (Node.js/npm usually required)
+        "ts_ls",          -- TypeScript, JavaScript, React, Next.js (replaces deprecated tsserver)
+        -- Salesforce LSP servers (Note: These may need manual installation)
+        -- "apex_ls",        -- Apex Language Server (install manually via Salesforce CLI)
       },
       -- Configure handlers directly here
       handlers = {
@@ -64,6 +67,45 @@ return {
             },
           })
         end,
+        
+        -- Enhanced Java handler for Salesforce development
+        ["jdtls"] = function()
+          lspconfig.jdtls.setup({
+            capabilities = capabilities,
+            filetypes = { "java" },
+            settings = {
+              java = {
+                configuration = {
+                  updateBuildConfiguration = "interactive",
+                },
+                completion = {
+                  favoriteStaticMembers = {
+                    "org.junit.Assert.*",
+                    "org.junit.Assume.*",
+                    "org.junit.jupiter.api.Assertions.*",
+                    "org.junit.jupiter.api.Assumptions.*",
+                    "org.junit.jupiter.api.DynamicContainer.*",
+                    "org.junit.jupiter.api.DynamicTest.*",
+                    "org.mockito.Mockito.*",
+                    "org.mockito.ArgumentMatchers.*",
+                    "org.mockito.Answers.*",
+                    -- Salesforce specific imports
+                    "System.*",
+                    "Test.*",
+                    "Database.*",
+                  },
+                },
+                sources = {
+                  organizeImports = {
+                    starThreshold = 9999,
+                    staticStarThreshold = 9999,
+                  },
+                },
+              },
+            },
+          })
+        end,
+        
         -- Default handler for all other servers
         function(server_name)
           lspconfig[server_name].setup({
@@ -82,6 +124,9 @@ return {
         "stylua",               -- Lua formatter
         "isort",                -- Python import sorter
         "black",                -- Python code formatter
+        -- Salesforce development tools
+        "xmlformatter",         -- XML formatter for metadata files
+        "sql-formatter",        -- SQL formatter for SOQL queries
       },
     })
   end,

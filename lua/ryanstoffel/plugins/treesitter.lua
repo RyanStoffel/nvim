@@ -10,7 +10,8 @@ return {
     local treesitter = require("nvim-treesitter.configs")
 
     -- configure treesitter
-    treesitter.setup({ -- enable syntax highlighting
+    treesitter.setup({ 
+      -- enable syntax highlighting
       highlight = {
         enable = true,
       },
@@ -20,7 +21,7 @@ return {
       autotag = {
         enable = true,
       },
-      -- ensure these language parsers are installed
+      -- ensure these language parsers are installed (added Salesforce languages)
       ensure_installed = {
         "json",
         "java",
@@ -45,6 +46,11 @@ return {
         "query",
         "vimdoc",
         "c",
+        -- Salesforce-specific parsers
+        "apex",         -- Apex language
+        "soql",         -- SOQL queries
+        "sosl",         -- SOSL searches
+        "xml",          -- For Lightning components and metadata
       },
       incremental_selection = {
         enable = true,
@@ -54,6 +60,29 @@ return {
           scope_incremental = false,
           node_decremental = "<bs>",
         },
+      },
+    })
+
+    -- Set up file type associations for Salesforce files
+    vim.filetype.add({
+      extension = {
+        cls = "apex",           -- Apex classes
+        trigger = "apex",       -- Apex triggers
+        page = "html",          -- Visualforce pages
+        component = "html",     -- Visualforce components
+        soql = "soql",          -- SOQL files
+        sosl = "sosl",          -- SOSL files
+        xml = "xml",            -- Metadata files
+        js = "javascript",      -- Lightning Web Component JS
+        html = "html",          -- Lightning Web Component HTML
+        css = "css",            -- Lightning Web Component CSS
+      },
+      pattern = {
+        [".*%.apex"] = "apex",
+        [".*%.cls"] = "apex",
+        [".*%.trigger"] = "apex",
+        [".*%.soql"] = "soql",
+        [".*%.sosl"] = "sosl",
       },
     })
   end,
