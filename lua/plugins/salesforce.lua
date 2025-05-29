@@ -1,11 +1,4 @@
 return {
-  -- Salesforce CLI integration
-  {
-    "nvim-neotest/nvim-nio",
-    lazy = true,
-  },
-  
-  -- Enhanced terminal for SFDX commands
   {
     "akinsho/toggleterm.nvim",
     version = "*",
@@ -32,20 +25,16 @@ return {
         },
       })
 
-      -- Salesforce specific terminal commands
       local Terminal = require("toggleterm.terminal").Terminal
-      
-      -- SFDX CLI commands
       local sfdx_deploy = Terminal:new({
         cmd = "sf project deploy start",
         dir = "git_dir",
         direction = "horizontal",
         close_on_exit = false,
       })
-      
       local sfdx_retrieve = Terminal:new({
         cmd = "sf project retrieve start",
-        dir = "git_dir", 
+        dir = "git_dir",
         direction = "horizontal",
         close_on_exit = false,
       })
@@ -53,7 +42,7 @@ return {
       local sfdx_test = Terminal:new({
         cmd = "sf apex run test",
         dir = "git_dir",
-        direction = "horizontal", 
+        direction = "horizontal",
         close_on_exit = false,
       })
 
@@ -64,18 +53,14 @@ return {
         close_on_exit = false,
       })
 
-      -- Keymaps for Salesforce commands
       vim.keymap.set("n", "<leader>sd", function() sfdx_deploy:toggle() end, { desc = "SFDX Deploy" })
       vim.keymap.set("n", "<leader>sr", function() sfdx_retrieve:toggle() end, { desc = "SFDX Retrieve" })
       vim.keymap.set("n", "<leader>st", function() sfdx_test:toggle() end, { desc = "SFDX Run Tests" })
       vim.keymap.set("n", "<leader>so", function() sfdx_org_open:toggle() end, { desc = "SFDX Open Org" })
-      
-      -- General terminal toggle
       vim.keymap.set("n", "<leader>tt", "<cmd>ToggleTerm<CR>", { desc = "Toggle Terminal" })
     end,
   },
 
-  -- Better file organization for Salesforce projects
   {
     "stevearc/oil.nvim",
     config = function()
@@ -114,21 +99,10 @@ return {
           end,
         },
       })
-      
       vim.keymap.set("n", "<leader>eo", "<CMD>Oil<CR>", { desc = "Open Oil file explorer" })
     end,
   },
 
-  -- JSON/XML formatting for metadata
-  {
-    "vuki656/package-info.nvim",
-    dependencies = "MunifTanjim/nui.nvim",
-    config = function()
-      require("package-info").setup()
-    end,
-  },
-
-  -- Git integration for Salesforce projects
   {
     "kdheepak/lazygit.nvim",
     dependencies = {
@@ -139,19 +113,15 @@ return {
     end,
   },
 
-  -- Debug Adapter Protocol for Apex
   {
     "mfussenegger/nvim-dap",
     config = function()
       local dap = require("dap")
-      
-      -- Apex Debug Adapter configuration
       dap.adapters.apex = {
         type = "executable",
         command = "sf",
         args = { "apex", "debug", "start" },
       }
-      
       dap.configurations.apex = {
         {
           type = "apex",
@@ -160,8 +130,6 @@ return {
           program = "${workspaceFolder}",
         },
       }
-      
-      -- Keymaps for debugging
       vim.keymap.set("n", "<leader>db", dap.toggle_breakpoint, { desc = "Toggle Breakpoint" })
       vim.keymap.set("n", "<leader>dc", dap.continue, { desc = "Debug Continue" })
       vim.keymap.set("n", "<leader>ds", dap.step_over, { desc = "Debug Step Over" })

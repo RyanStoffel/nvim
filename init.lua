@@ -1,34 +1,18 @@
--- Updated init.lua with Salesforce development enhancements
 require("rstof.lazy")
 require("rstof.options")
 
--- Load Salesforce-specific configurations
-local salesforce_ok, salesforce = pcall(require, "rstof.salesforce-keymaps")
-if salesforce_ok then
-  salesforce.setup()
-end
-
--- Enhanced options for Salesforce development
 local opt = vim.opt
 
--- Better search and replace for large codebases
 opt.grepprg = "rg --vimgrep --smart-case --follow"
-
--- Enhanced completion settings
 opt.completeopt = "menu,menuone,noselect"
-opt.pumheight = 15 -- Limit popup menu height
-
--- Better diff settings for Git integration
+opt.pumheight = 15
 opt.diffopt = "internal,filler,closeoff,hiddenoff,algorithm:minimal"
+opt.hidden = true
+opt.backup = false
+opt.writebackup = false
+opt.swapfile = false
+opt.undofile = true
 
--- Enhanced file handling for large Salesforce projects
-opt.hidden = true -- Allow switching buffers without saving
-opt.backup = false -- Disable backup files
-opt.writebackup = false -- Disable backup before write
-opt.swapfile = false -- Disable swap files
-opt.undofile = true -- Enable persistent undo
-
--- Set up custom filetypes for Salesforce
 vim.filetype.add({
   extension = {
     cls = "apex",
@@ -43,261 +27,45 @@ vim.filetype.add({
   },
 })
 
--- Add this to your init.lua (replace the previous Salesforce keymaps section)
+local keymap = vim.keymap
+local opts = { noremap = true, silent = true }
 
--- Enhanced Salesforce Development Setup
-local function setup_enhanced_salesforce()
-  -- Check if we're in a Salesforce project
-  local handle = io.popen("find . -maxdepth 2 -name 'sfdx-project.json' 2>/dev/null")
-  local result = handle:read("*a")
-  handle:close()
+keymap.set("n", "<C-h>", "<C-w>h", opts)
+keymap.set("n", "<C-j>", "<C-w>j", opts)
+keymap.set("n", "<C-k>", "<C-w>k", opts)
+keymap.set("n", "<C-l>", "<C-w>l", opts)
 
-  if result ~= "" then
-    local keymap = vim.keymap
-    local opts = { noremap = true, silent = true }
+keymap.set("n", "<C-Up>", ":resize -2<CR>", opts)
+keymap.set("n", "<C-Down>", ":resize +2<CR>", opts)
+keymap.set("n", "<C-Left>", ":vertical resize -2<CR>", opts)
+keymap.set("n", "<C-Right>", ":vertical resize +2<CR>", opts)
 
-    -- Salesforce CLI commands
-    keymap.set("n", "<leader>sdo", ":!sf org open<CR>",
-      vim.tbl_extend("force", opts, { desc = "Open Salesforce Org" }))
-    keymap.set("n", "<leader>sds", ":!sf project deploy start<CR>",
-      vim.tbl_extend("force", opts, { desc = "Deploy to Org" }))
-    keymap.set("n", "<leader>sdr", ":!sf project retrieve start<CR>",
-      vim.tbl_extend("force", opts, { desc = "Retrieve from Org" }))
-    keymap.set("n", "<leader>sdt", ":!sf apex run test<CR>",
-      vim.tbl_extend("force", opts, { desc = "Run Apex Tests" }))
-    keymap.set("n", "<leader>sdl", ":!sf org list<CR>",
-      vim.tbl_extend("force", opts, { desc = "List Orgs" }))
-    keymap.set("n", "<leader>sdi", ":!sf org display<CR>",
-      vim.tbl_extend("force", opts, { desc = "Show Org Info" }))
+keymap.set("n", "<S-l>", ":bnext<CR>", opts)
+keymap.set("n", "<S-h>", ":bprevious<CR>", opts)
+keymap.set("n", "<leader>bd", ":bdelete<CR>", vim.tbl_extend("force", opts, { desc = "Delete Buffer" }))
 
-    -- File creation commands (like VS Code)
-    keymap.set("n", "<leader>sac", ":SfCreateClass<CR>",
-      vim.tbl_extend("force", opts, { desc = "Create Apex Class" }))
-    keymap.set("n", "<leader>sat", ":SfCreateTestClass<CR>",
-      vim.tbl_extend("force", opts, { desc = "Create Apex Test Class" }))
-    keymap.set("n", "<leader>satr", ":SfCreateTrigger<CR>",
-      vim.tbl_extend("force", opts, { desc = "Create Apex Trigger" }))
-    keymap.set("n", "<leader>slc", ":SfCreateLWC<CR>",
-      vim.tbl_extend("force", opts, { desc = "Create Lightning Web Component" }))
-    keymap.set("n", "<leader>sac", ":SfCreateAura<CR>",
-      vim.tbl_extend("force", opts, { desc = "Create Aura Component" }))
+keymap.set("n", "<leader>rr", ":%s/\\<<C-r><C-w>\\>/<C-r><C-w>/gI<Left><Left><Left>",
+  vim.tbl_extend("force", opts, { desc = "Replace word under cursor" }))
 
-    -- Quick navigation for Salesforce project structure
-    keymap.set("n", "<leader>sfc", ":e force-app/main/default/classes/<CR>",
-      vim.tbl_extend("force", opts, { desc = "Go to Classes" }))
-    keymap.set("n", "<leader>sft", ":e force-app/main/default/triggers/<CR>",
-      vim.tbl_extend("force", opts, { desc = "Go to Triggers" }))
-    keymap.set("n", "<leader>sfl", ":e force-app/main/default/lwc/<CR>",
-      vim.tbl_extend("force", opts, { desc = "Go to LWC" }))
-    keymap.set("n", "<leader>sfa", ":e force-app/main/default/aura/<CR>",
-      vim.tbl_extend("force", opts, { desc = "Go to Aura" }))
-    keymap.set("n", "<leader>sfo", ":e force-app/main/default/objects/<CR>",
-      vim.tbl_extend("force", opts, { desc = "Go to Objects" }))
-    keymap.set("n", "<leader>sfp", ":e force-app/main/default/permissionsets/<CR>",
-      vim.tbl_extend("force", opts, { desc = "Go to Permission Sets" }))
+keymap.set("n", "<leader>w", ":w<CR>", vim.tbl_extend("force", opts, { desc = "Save File" }))
+keymap.set("n", "<leader>q", ":q<CR>", vim.tbl_extend("force", opts, { desc = "Quit" }))
+keymap.set("n", "<leader>Q", ":qa!<CR>", vim.tbl_extend("force", opts, { desc = "Force Quit All" }))
 
-    -- Snippet shortcuts (manual trigger for when auto-complete isn't working)
-    keymap.set("n", "<leader>ssc", function()
-      -- Insert apex class snippet
-      local filename = vim.fn.expand("%:t:r")
-      local lines = {
-        "/**",
-        " * @description " .. filename,
-        " * @author " .. (vim.fn.getenv("USER") or "Your Name"),
-        " * @date " .. os.date("%Y-%m-%d"),
-        " */",
-        "public class " .. filename .. " {",
-        "    ",
-        "}"
-      }
-      vim.api.nvim_put(lines, "l", true, true)
-      vim.cmd("normal! 7G$")
-    end, vim.tbl_extend("force", opts, { desc = "Insert Apex Class Template" }))
+keymap.set("n", "<leader>n", ":set nu!<CR>", vim.tbl_extend("force", opts, { desc = "Toggle Line Numbers" }))
+keymap.set("n", "<leader>h", ":nohlsearch<CR>", vim.tbl_extend("force", opts, { desc = "Clear Search Highlight" }))
 
-    keymap.set("n", "<leader>ssm", function()
-      -- Insert method template
-      vim.api.nvim_put({
-        "/**",
-        " * @description Method description",
-        " * @param paramName Parameter description",
-        " * @return Return description",
-        " */",
-        "public static void methodName() {",
-        "    ",
-        "}"
-      }, "l", true, true)
-      vim.cmd("normal! 7G$")
-    end, vim.tbl_extend("force", opts, { desc = "Insert Apex Method Template" }))
+keymap.set("v", "<", "<gv", opts)
+keymap.set("v", ">", ">gv", opts)
 
-    keymap.set("n", "<leader>sst", function()
-      -- Insert test method template
-      vim.api.nvim_put({
-        "@isTest",
-        "static void testMethodName() {",
-        "    // Given",
-        "    ",
-        "    // When",
-        "    Test.startTest();",
-        "    ",
-        "    Test.stopTest();",
-        "    ",
-        "    // Then",
-        "    System.assert(true, 'Test assertion');",
-        "}"
-      }, "l", true, true)
-      vim.cmd("normal! 4G$")
-    end, vim.tbl_extend("force", opts, { desc = "Insert Test Method Template" }))
+keymap.set("v", "<A-j>", ":m .+1<CR>==", opts)
+keymap.set("v", "<A-k>", ":m .-2<CR>==", opts)
+keymap.set("x", "J", ":move '>+1<CR>gv-gv", opts)
+keymap.set("x", "K", ":move '<-2<CR>gv-gv", opts)
+keymap.set("x", "<A-j>", ":move '>+1<CR>gv-gv", opts)
+keymap.set("x", "<A-k>", ":move '<-2<CR>gv-gv", opts)
 
-    keymap.set("n", "<leader>ssq", function()
-      -- Insert SOQL query template
-      vim.api.nvim_put({
-        "List<SObject> records = [",
-        "    SELECT Id, Name",
-        "    FROM SObject",
-        "    WHERE Id != null",
-        "    LIMIT 100",
-        "];"
-      }, "l", true, true)
-      vim.cmd("normal! 2G$")
-    end, vim.tbl_extend("force", opts, { desc = "Insert SOQL Query Template" }))
-
-    -- LWC specific shortcuts
-    keymap.set("n", "<leader>slm", function()
-      -- Insert LWC method template
-      vim.api.nvim_put({
-        "methodName() {",
-        "    // Method implementation",
-        "    ",
-        "}"
-      }, "l", true, true)
-      vim.cmd("normal! 2G$")
-    end, vim.tbl_extend("force", opts, { desc = "Insert LWC Method Template" }))
-
-    keymap.set("n", "<leader>slw", function()
-      -- Insert LWC wire template
-      vim.api.nvim_put({
-        "@wire(getRecords, { objectApiName: 'Account' })",
-        "wiredRecords({ error, data }) {",
-        "    if (data) {",
-        "        // Handle data",
-        "        ",
-        "    } else if (error) {",
-        "        // Handle error",
-        "        ",
-        "    }",
-        "}"
-      }, "l", true, true)
-      vim.cmd("normal! 5G$")
-    end, vim.tbl_extend("force", opts, { desc = "Insert LWC Wire Template" }))
-
-    -- Quick SOQL/SOSL execution (requires sf CLI)
-    keymap.set("n", "<leader>sqe", function()
-      vim.ui.input({ prompt = "Enter SOQL Query: " }, function(query)
-        if query then
-          vim.cmd("split")
-          vim.cmd("terminal sf data query --query \"" .. query .. "\" --json | jq .")
-        end
-      end)
-    end, vim.tbl_extend("force", opts, { desc = "Execute SOQL Query" }))
-
-    -- Salesforce documentation shortcuts
-    keymap.set("n", "<leader>sdh", function()
-      local word = vim.fn.expand("<cword>")
-      if word ~= "" then
-        -- Try to open specific documentation for the word under cursor
-        local urls = {
-          ["System"] = "https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_system.htm",
-          ["Database"] = "https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_database.htm",
-          ["Test"] = "https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_test.htm",
-          ["String"] = "https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm",
-          ["List"] = "https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm",
-          ["Map"] = "https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm",
-          ["Set"] = "https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_set.htm"
-        }
-
-        local url = urls[word] or "https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/"
-        vim.fn.system("open " .. url)
-      else
-        vim.fn.system("open https://developer.salesforce.com/docs/")
-      end
-    end, vim.tbl_extend("force", opts, { desc = "Open Salesforce Documentation" }))
-
-    -- Autocommands for Salesforce development
-    local salesforce_group = vim.api.nvim_create_augroup("SalesforceGroup", { clear = true })
-
-    -- Set specific indentation for Salesforce files
-    vim.api.nvim_create_autocmd("FileType", {
-      group = salesforce_group,
-      pattern = "apex",
-      callback = function()
-        vim.opt_local.tabstop = 4
-        vim.opt_local.shiftwidth = 4
-        vim.opt_local.expandtab = true
-        vim.opt_local.commentstring = "// %s"
-
-        -- Add Apex-specific abbreviations
-        vim.cmd("iabbrev <buffer> sout System.debug();")
-        vim.cmd("iabbrev <buffer> sysd System.debug();")
-        vim.cmd("iabbrev <buffer> pubclass public class")
-        vim.cmd("iabbrev <buffer> privmethod private static void")
-        vim.cmd("iabbrev <buffer> pubmethod public static void")
-      end,
-    })
-
-    -- Set up XML formatting for metadata files
-    vim.api.nvim_create_autocmd("FileType", {
-      group = salesforce_group,
-      pattern = "xml",
-      callback = function()
-        if vim.fn.expand("%:p"):match("force%-app") then
-          vim.opt_local.tabstop = 4
-          vim.opt_local.shiftwidth = 4
-          vim.opt_local.expandtab = true
-        end
-      end,
-    })
-
-    -- JavaScript/LWC specific settings
-    vim.api.nvim_create_autocmd("FileType", {
-      group = salesforce_group,
-      pattern = {"javascript", "html", "css"},
-      callback = function()
-        local filepath = vim.fn.expand("%:p")
-        if filepath:match("force%-app/main/default/lwc") then
-          vim.opt_local.tabstop = 2
-          vim.opt_local.shiftwidth = 2
-          vim.opt_local.expandtab = true
-
-          if vim.bo.filetype == "javascript" then
-            -- Add LWC-specific abbreviations
-            vim.cmd("iabbrev <buffer> conlog console.log();")
-            vim.cmd("iabbrev <buffer> thisevent this.dispatchEvent(new CustomEvent('', { detail: {} }));")
-          end
-        end
-      end,
-    })
-
-    -- Auto-save when deploying (optional)
-    vim.api.nvim_create_autocmd("User", {
-      group = salesforce_group,
-      pattern = "SalesforceDeploy",
-      callback = function()
-        vim.cmd("silent! wall") -- Save all buffers
-      end,
-    })
-
-    print("🚀 Enhanced Salesforce development environment loaded!")
-    print("💡 Use <leader>sa* for file creation, <leader>sd* for deployment, <leader>ss* for snippets")
-  end
-end
-
--- Set up enhanced Salesforce environment when Neovim starts
-vim.defer_fn(setup_enhanced_salesforce, 100)
-
--- Auto-commands for better development experience
 local general_group = vim.api.nvim_create_augroup("GeneralGroup", { clear = true })
 
--- Highlight yanked text
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = general_group,
   callback = function()
@@ -305,7 +73,6 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   end,
 })
 
--- Remove trailing whitespace on save
 vim.api.nvim_create_autocmd("BufWritePre", {
   group = general_group,
   pattern = "*",
@@ -316,7 +83,6 @@ vim.api.nvim_create_autocmd("BufWritePre", {
   end,
 })
 
--- Auto-resize splits when Vim is resized
 vim.api.nvim_create_autocmd("VimResized", {
   group = general_group,
   callback = function()
@@ -324,7 +90,6 @@ vim.api.nvim_create_autocmd("VimResized", {
   end,
 })
 
--- Return to last edit position when opening files
 vim.api.nvim_create_autocmd("BufReadPost", {
   group = general_group,
   callback = function()
@@ -335,7 +100,320 @@ vim.api.nvim_create_autocmd("BufReadPost", {
   end,
 })
 
--- Set up custom user commands for Salesforce development
+local function is_salesforce_project()
+  return vim.fn.filereadable("sfdx-project.json") == 1 or vim.fn.isdirectory(".sfdx") == 1
+end
+
+if is_salesforce_project() then
+  local function create_apex_class(name)
+    local class_dir = vim.fn.getcwd() .. "/force-app/main/default/classes"
+    vim.fn.mkdir(class_dir, "p")
+    local class_file = class_dir .. "/" .. name .. ".cls"
+    local meta_file = class_dir .. "/" .. name .. ".cls-meta.xml"
+    local cls_content = string.format([[/**
+ * @description %s
+ * @author %s
+ * @date %s
+ */
+public class %s {
+
+}]], name, vim.fn.getenv("USER") or "Your Name", os.date("%Y-%m-%d"), name)
+    local meta_content = [[<?xml version="1.0" encoding="UTF-8"?>
+<ApexClass xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>60.0</apiVersion>
+    <status>Active</status>
+</ApexClass>]]
+    local cls_file = io.open(class_file, "w")
+    if cls_file then
+      cls_file:write(cls_content)
+      cls_file:close()
+    end
+    local meta_file_handle = io.open(meta_file, "w")
+    if meta_file_handle then
+      meta_file_handle:write(meta_content)
+      meta_file_handle:close()
+    end
+    vim.cmd("edit " .. class_file)
+    vim.cmd("normal! 6G$")
+    print("✅ Created Apex class: " .. name)
+  end
+
+  local function create_test_class(name)
+    if not name:match("Test$") then
+      name = name .. "Test"
+    end
+    local class_dir = vim.fn.getcwd() .. "/force-app/main/default/classes"
+    vim.fn.mkdir(class_dir, "p")
+    local class_file = class_dir .. "/" .. name .. ".cls"
+    local meta_file = class_dir .. "/" .. name .. ".cls-meta.xml"
+    local cls_content = string.format([[/**
+ * @description Test class for %s
+ * @author %s
+ * @date %s
+ */
+@isTest
+public class %s {
+
+    @TestSetup
+    static void makeData() {
+
+    }
+
+    @isTest
+    static void testMethod() {
+        Test.startTest();
+
+        Test.stopTest();
+
+        System.assert(true, 'Test passed');
+    }
+}]], name:gsub("Test$", ""), vim.fn.getenv("USER") or "Your Name", os.date("%Y-%m-%d"), name)
+    local meta_content = [[<?xml version="1.0" encoding="UTF-8"?>
+<ApexClass xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>60.0</apiVersion>
+    <status>Active</status>
+</ApexClass>]]
+    local cls_file = io.open(class_file, "w")
+    if cls_file then
+      cls_file:write(cls_content)
+      cls_file:close()
+    end
+    local meta_file_handle = io.open(meta_file, "w")
+    if meta_file_handle then
+      meta_file_handle:write(meta_content)
+      meta_file_handle:close()
+    end
+    vim.cmd("edit " .. class_file)
+    vim.cmd("normal! 11G$")
+    print("✅ Created Test class: " .. name)
+  end
+
+  local function create_lwc_component(name)
+    local lwc_dir = vim.fn.getcwd() .. "/force-app/main/default/lwc/" .. name
+    vim.fn.mkdir(lwc_dir, "p")
+    local class_name = name:gsub("%-(%l)", string.upper):gsub("^%l", string.upper)
+    local js_content = string.format([[import { LightningElement } from 'lwc';
+
+export default class %s extends LightningElement {
+
+    connectedCallback() {
+
+    }
+
+}]], class_name)
+    local html_content = string.format([[<template>
+    <lightning-card title="%s">
+        <div class="slds-p-horizontal_small">
+            <p>Hello from %s!</p>
+        </div>
+    </lightning-card>
+</template>]], name:gsub("%-", " "):gsub("^%l", string.upper), name)
+    local css_content = [[.container {
+    padding: 1rem;
+}
+
+.slds-card {
+    margin: 1rem 0;
+}]]
+    local meta_content = [[<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>60.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+    </targets>
+</LightningComponentBundle>]]
+    local files = {
+      [name .. ".js"] = js_content,
+      [name .. ".html"] = html_content,
+      [name .. ".css"] = css_content,
+      [name .. ".js-meta.xml"] = meta_content
+    }
+    for filename, content in pairs(files) do
+      local file = io.open(lwc_dir .. "/" .. filename, "w")
+      if file then
+        file:write(content)
+        file:close()
+      end
+    end
+    vim.cmd("edit " .. lwc_dir .. "/" .. name .. ".js")
+    vim.cmd("normal! 5G$")
+    print("✅ Created LWC component: " .. name)
+  end
+
+  vim.api.nvim_create_user_command("SfCreateClass", function(cmd_opts)
+    local name = cmd_opts.args
+    if name == "" then
+      vim.ui.input({ prompt = "Apex Class Name: " }, function(input)
+        if input and input ~= "" then
+          create_apex_class(input)
+        end
+      end)
+    else
+      create_apex_class(name)
+    end
+  end, { nargs = "?", desc = "Create new Apex class" })
+
+  vim.api.nvim_create_user_command("SfCreateTestClass", function(cmd_opts)
+    local name = cmd_opts.args
+    if name == "" then
+      vim.ui.input({ prompt = "Test Class Name: " }, function(input)
+        if input and input ~= "" then
+          create_test_class(input)
+        end
+      end)
+    else
+      create_test_class(name)
+    end
+  end, { nargs = "?", desc = "Create new Test class" })
+
+  vim.api.nvim_create_user_command("SfCreateLWC", function(cmd_opts)
+    local name = cmd_opts.args
+    if name == "" then
+      vim.ui.input({ prompt = "LWC Name (kebab-case): " }, function(input)
+        if input and input ~= "" then
+          create_lwc_component(input)
+        end
+      end)
+    else
+      create_lwc_component(name)
+    end
+  end, { nargs = "?", desc = "Create new LWC component" })
+
+  keymap.set("n", "<leader>sdo", ":!sf org open<CR>", vim.tbl_extend("force", opts, { desc = "Open Salesforce Org" }))
+  keymap.set("n", "<leader>sds", ":!sf project deploy start<CR>", vim.tbl_extend("force", opts, { desc = "Deploy to Org" }))
+  keymap.set("n", "<leader>sdr", ":!sf project retrieve start<CR>", vim.tbl_extend("force", opts, { desc = "Retrieve from Org" }))
+  keymap.set("n", "<leader>sdt", ":!sf apex run test<CR>", vim.tbl_extend("force", opts, { desc = "Run Apex Tests" }))
+  keymap.set("n", "<leader>sdl", ":!sf org list<CR>", vim.tbl_extend("force", opts, { desc = "List Orgs" }))
+  keymap.set("n", "<leader>sdi", ":!sf org display<CR>", vim.tbl_extend("force", opts, { desc = "Show Org Info" }))
+
+  keymap.set("n", "<leader>sac", ":SfCreateClass<CR>", vim.tbl_extend("force", opts, { desc = "Create Apex Class" }))
+  keymap.set("n", "<leader>sat", ":SfCreateTestClass<CR>", vim.tbl_extend("force", opts, { desc = "Create Apex Test Class" }))
+  keymap.set("n", "<leader>slc", ":SfCreateLWC<CR>", vim.tbl_extend("force", opts, { desc = "Create Lightning Web Component" }))
+
+  keymap.set("n", "<leader>sfc", ":e force-app/main/default/classes/<CR>", vim.tbl_extend("force", opts, { desc = "Go to Classes" }))
+  keymap.set("n", "<leader>sft", ":e force-app/main/default/triggers/<CR>", vim.tbl_extend("force", opts, { desc = "Go to Triggers" }))
+  keymap.set("n", "<leader>sfl", ":e force-app/main/default/lwc/<CR>", vim.tbl_extend("force", opts, { desc = "Go to LWC" }))
+  keymap.set("n", "<leader>sfa", ":e force-app/main/default/aura/<CR>", vim.tbl_extend("force", opts, { desc = "Go to Aura" }))
+  keymap.set("n", "<leader>sfo", ":e force-app/main/default/objects/<CR>", vim.tbl_extend("force", opts, { desc = "Go to Objects" }))
+
+  keymap.set("n", "<leader>sqe", function()
+    vim.ui.input({ prompt = "Enter SOQL Query: " }, function(query)
+      if query then
+        vim.cmd("split")
+        vim.cmd("terminal sf data query --query \"" .. query .. "\" --json | jq .")
+      end
+    end)
+  end, vim.tbl_extend("force", opts, { desc = "Execute SOQL Query" }))
+
+  keymap.set("n", "<leader>sdh", function()
+    local word = vim.fn.expand("<cword>")
+    local urls = {
+      ["System"] = "https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_system.htm",
+      ["Database"] = "https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_database.htm",
+      ["Test"] = "https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_test.htm",
+      ["String"] = "https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm",
+    }
+    local url = urls[word] or "https://developer.salesforce.com/docs/"
+    vim.fn.system("open " .. url)
+  end, vim.tbl_extend("force", opts, { desc = "Open Salesforce Documentation" }))
+
+  local salesforce_group = vim.api.nvim_create_augroup("SalesforceGroup", { clear = true })
+  vim.api.nvim_create_autocmd("FileType", {
+    group = salesforce_group,
+    pattern = "apex",
+    callback = function()
+      vim.opt_local.tabstop = 4
+      vim.opt_local.shiftwidth = 4
+      vim.opt_local.expandtab = true
+      vim.opt_local.commentstring = "// %s"
+      vim.cmd("iabbrev <buffer> sout System.debug();")
+      vim.cmd("iabbrev <buffer> sysd System.debug();")
+    end,
+  })
+
+  vim.api.nvim_create_autocmd("FileType", {
+    group = salesforce_group,
+    pattern = "xml",
+    callback = function()
+      if vim.fn.expand("%:p"):match("force%-app") then
+        vim.opt_local.tabstop = 4
+        vim.opt_local.shiftwidth = 4
+        vim.opt_local.expandtab = true
+      end
+    end,
+  })
+
+  vim.api.nvim_create_autocmd("FileType", {
+    group = salesforce_group,
+    pattern = {"javascript", "html", "css"},
+    callback = function()
+      local filepath = vim.fn.expand("%:p")
+      if filepath:match("force%-app/main/default/lwc") then
+        vim.opt_local.tabstop = 2
+        vim.opt_local.shiftwidth = 2
+        vim.opt_local.expandtab = true
+        if vim.bo.filetype == "javascript" then
+          vim.cmd("iabbrev <buffer> conlog console.log();")
+        end
+      end
+    end,
+  })
+
+  vim.api.nvim_create_autocmd("BufNewFile", {
+    pattern = "*.cls",
+    callback = function()
+      local filename = vim.fn.expand("%:t:r")
+      local filepath = vim.fn.expand("%:p")
+      if filepath:match("force%-app/main/default/classes") then
+        if filename:match("Test$") then
+          local lines = {
+            "/**",
+            " * @description Test class for " .. filename:gsub("Test$", ""),
+            " * @author " .. (vim.fn.getenv("USER") or "Your Name"),
+            " * @date " .. os.date("%Y-%m-%d"),
+            " */",
+            "@isTest",
+            "public class " .. filename .. " {",
+            "    ",
+            "    @TestSetup",
+            "    static void makeData() {",
+            "        ",
+            "    }",
+            "    ",
+            "    @isTest",
+            "    static void testMethod() {",
+            "        Test.startTest();",
+            "        ",
+            "        Test.stopTest();",
+            "        ",
+            "        System.assert(true, 'Test passed');",
+            "    }",
+            "}"
+          }
+          vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
+          vim.cmd("normal! 11G$")
+        else
+          local lines = {
+            "/**",
+            " * @description " .. filename,
+            " * @author " .. (vim.fn.getenv("USER") or "Your Name"),
+            " * @date " .. os.date("%Y-%m-%d"),
+            " */",
+            "public class " .. filename .. " {",
+            "    ",
+            "}"
+          }
+          vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
+          vim.cmd("normal! 7G$")
+        end
+      end
+    end,
+  })
+end
+
 vim.api.nvim_create_user_command("SfDeploy", function()
   vim.cmd("!sf project deploy start")
 end, { desc = "Deploy current project to Salesforce org" })
@@ -351,125 +429,3 @@ end, { desc = "Run all Apex tests" })
 vim.api.nvim_create_user_command("SfOpen", function()
   vim.cmd("!sf org open")
 end, { desc = "Open Salesforce org in browser" })
-
--- Display startup message for Salesforce developers
-vim.defer_fn(function()
-  if vim.fn.isdirectory(".sfdx") == 1 or vim.fn.filereadable("sfdx-project.json") == 1 then
-    print("🚀 Salesforce Development Environment Ready!")
-    print("Use <leader>s* for Salesforce commands")
-  end
-end, 100)
-
--- Add this to your init.lua after the existing content
-
--- Set up custom filetypes for Salesforce
-vim.filetype.add({
-  extension = {
-    cls = "apex",
-    trigger = "apex",
-    soql = "soql",
-    sosl = "sosl",
-  },
-  pattern = {
-    [".*%.trigger"] = "apex",
-    [".*%.cls"] = "apex",
-    [".*%-meta%.xml"] = "xml",
-  },
-})
-
--- Salesforce-specific keymaps (only if in a Salesforce project)
-local function setup_salesforce_keymaps()
-  -- Check if we're in a Salesforce project
-  local handle = io.popen("find . -maxdepth 2 -name 'sfdx-project.json' 2>/dev/null")
-  local result = handle:read("*a")
-  handle:close()
-
-  if result ~= "" then
-    local keymap = vim.keymap
-    local opts = { noremap = true, silent = true }
-
-    -- Salesforce CLI commands (using terminal)
-    keymap.set("n", "<leader>sdo", ":!sf org open<CR>", vim.tbl_extend("force", opts, { desc = "Open Salesforce Org" }))
-    keymap.set("n", "<leader>sds", ":!sf project deploy start<CR>", vim.tbl_extend("force", opts, { desc = "Deploy to Org" }))
-    keymap.set("n", "<leader>sdr", ":!sf project retrieve start<CR>", vim.tbl_extend("force", opts, { desc = "Retrieve from Org" }))
-    keymap.set("n", "<leader>sdt", ":!sf apex run test<CR>", vim.tbl_extend("force", opts, { desc = "Run Apex Tests" }))
-    keymap.set("n", "<leader>sdl", ":!sf org list<CR>", vim.tbl_extend("force", opts, { desc = "List Orgs" }))
-    keymap.set("n", "<leader>sdi", ":!sf org display<CR>", vim.tbl_extend("force", opts, { desc = "Show Org Info" }))
-
-    -- Quick navigation for Salesforce project structure
-    keymap.set("n", "<leader>sfc", ":e force-app/main/default/classes/<CR>", vim.tbl_extend("force", opts, { desc = "Go to Classes" }))
-    keymap.set("n", "<leader>sft", ":e force-app/main/default/triggers/<CR>", vim.tbl_extend("force", opts, { desc = "Go to Triggers" }))
-    keymap.set("n", "<leader>sfl", ":e force-app/main/default/lwc/<CR>", vim.tbl_extend("force", opts, { desc = "Go to LWC" }))
-    keymap.set("n", "<leader>sfa", ":e force-app/main/default/aura/<CR>", vim.tbl_extend("force", opts, { desc = "Go to Aura" }))
-    keymap.set("n", "<leader>sfo", ":e force-app/main/default/objects/<CR>", vim.tbl_extend("force", opts, { desc = "Go to Objects" }))
-
-    -- Custom snippets for common Salesforce patterns
-    keymap.set("n", "<leader>ssc", function()
-      vim.api.nvim_put({
-        "public class ClassName {",
-        "    ",
-        "    public ClassName() {",
-        "        ",
-        "    }",
-        "    ",
-        "}"
-      }, "l", true, true)
-    end, vim.tbl_extend("force", opts, { desc = "Insert Apex Class Template" }))
-
-    keymap.set("n", "<leader>ssm", function()
-      vim.api.nvim_put({
-        "public static void methodName() {",
-        "    ",
-        "}"
-      }, "l", true, true)
-    end, vim.tbl_extend("force", opts, { desc = "Insert Apex Method Template" }))
-
-    keymap.set("n", "<leader>sst", function()
-      vim.api.nvim_put({
-        "@isTest",
-        "public class TestClassName {",
-        "    ",
-        "    @isTest",
-        "    static void testMethod() {",
-        "        // Test implementation",
-        "        System.assert(true);",
-        "    }",
-        "    ",
-        "}"
-      }, "l", true, true)
-    end, vim.tbl_extend("force", opts, { desc = "Insert Apex Test Class Template" }))
-
-    -- Autocommands for Salesforce development
-    local salesforce_group = vim.api.nvim_create_augroup("SalesforceGroup", { clear = true })
-
-    -- Set specific indentation for Salesforce files
-    vim.api.nvim_create_autocmd("FileType", {
-      group = salesforce_group,
-      pattern = "apex",
-      callback = function()
-        vim.opt_local.tabstop = 4
-        vim.opt_local.shiftwidth = 4
-        vim.opt_local.expandtab = true
-        vim.opt_local.commentstring = "// %s"
-      end,
-    })
-
-    -- Set up XML formatting for metadata files
-    vim.api.nvim_create_autocmd("FileType", {
-      group = salesforce_group,
-      pattern = "xml",
-      callback = function()
-        if vim.fn.expand("%:p"):match("force%-app") then
-          vim.opt_local.tabstop = 4
-          vim.opt_local.shiftwidth = 4
-          vim.opt_local.expandtab = true
-        end
-      end,
-    })
-
-    print("🚀 Salesforce development environment loaded!")
-  end
-end
-
--- Set up Salesforce keymaps when Neovim starts
-vim.defer_fn(setup_salesforce_keymaps, 100)

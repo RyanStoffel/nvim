@@ -1,12 +1,10 @@
-return
-{
-	"folke/snacks.nvim",
-	priority = 1000,
-	lazy = false,
-	---@type snacks.Config
-	opts = {
-		bigfile = { enabled = true },
-    dashboard = { enabled = true },
+return {
+  "folke/snacks.nvim",
+  priority = 1000,
+  lazy = false,
+  opts = {
+    bigfile = { enabled = true },
+    dashboard = { enabled = false },
     indent = { enabled = true },
     input = { enabled = true },
     picker = { enabled = true },
@@ -16,5 +14,10 @@ return
     scroll = { enabled = true },
     statuscolumn = { enabled = true },
     words = { enabled = true },
-	},
+		explorer = { enabled = true },
+  },
+	config = function()
+		local keymap = vim.keymap
+		keymap.set("n", "<leader>ee", "<cmd>lua Snacks.explorer.open()<CR>", { desc = "Open File Explorer" })
+	end,
 }
