@@ -1,4 +1,3 @@
--- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
 	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
@@ -25,7 +24,7 @@ require("lazy").setup({
 	},
 	install = { colorscheme = { "catppuccin" } },
 	checker = { enabled = true },
-	change_detection = { 
-		notify = false, 
+	change_detection = {
+		notify = false,
 	},
 })

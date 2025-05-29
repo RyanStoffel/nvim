@@ -14,10 +14,9 @@ return {
     scroll = { enabled = true },
     statuscolumn = { enabled = true },
     words = { enabled = true },
-		explorer = { enabled = true },
+    explorer = { enabled = true },
   },
-	config = function()
-		local keymap = vim.keymap
-		keymap.set("n", "<leader>ee", "<cmd>lua Snacks.explorer.open()<CR>", { desc = "Open File Explorer" })
-	end,
+  keys = {
+    { "<leader>ee", function() Snacks.explorer.open() end, desc = "Open File Explorer" },
+  },
 }

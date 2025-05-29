@@ -14,11 +14,16 @@ return {
       },
 
       ensure_installed = {
+        -- Core languages
         "c", "cpp", "c_sharp", "java", "python",
+        -- Salesforce
         "apex", "soql",
-        "javascript", "typescript", "tsx", "jsx",
+        -- Web development (NOTE: jsx is handled by javascript/typescript parsers)
+        "javascript", "typescript", "tsx",  -- Removed "jsx"
         "html", "css", "json", "yaml", "xml", "sql",
+        -- System & config
         "bash", "lua", "vim", "vimdoc",
+        "regex", -- This should work now
       },
 
       incremental_selection = {

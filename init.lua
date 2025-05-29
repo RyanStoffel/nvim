@@ -1,5 +1,5 @@
-require("rstof.lazy")
 require("rstof.options")
+require("rstof.lazy")
 
 local opt = vim.opt
 

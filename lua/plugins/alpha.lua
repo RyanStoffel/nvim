@@ -40,7 +40,7 @@ return {
         dashboard.button("rt", "🔄 Retrieve", "<cmd>SfRetrieve<CR>"),
         dashboard.button("ts", "✅ Run Tests", "<cmd>SfTest<CR>"),
         dashboard.button("", "", ""),
-        dashboard.button("q", "  Quit NVIM", "<cmd>qa<CR>"),
+
       }
 
       local function get_org_info()
