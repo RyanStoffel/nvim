@@ -100,10 +100,12 @@ vim.api.nvim_create_autocmd("BufReadPost", {
   end,
 })
 
+-- Salesforce project detection and setup
 local function is_salesforce_project()
   return vim.fn.filereadable("sfdx-project.json") == 1 or vim.fn.isdirectory(".sfdx") == 1
 end
 
+-- Only run Salesforce setup if in a Salesforce project
 if is_salesforce_project() then
   local function create_apex_class(name)
     local class_dir = vim.fn.getcwd() .. "/force-app/main/default/classes"
@@ -123,10 +125,10 @@ public class %s {
     <apiVersion>60.0</apiVersion>
     <status>Active</status>
 </ApexClass>]]
-    local cls_file = io.open(class_file, "w")
-    if cls_file then
-      cls_file:write(cls_content)
-      cls_file:close()
+    local cls_file_handle = io.open(class_file, "w")
+    if cls_file_handle then
+      cls_file_handle:write(cls_content)
+      cls_file_handle:close()
     end
     local meta_file_handle = io.open(meta_file, "w")
     if meta_file_handle then
@@ -173,10 +175,10 @@ public class %s {
     <apiVersion>60.0</apiVersion>
     <status>Active</status>
 </ApexClass>]]
-    local cls_file = io.open(class_file, "w")
-    if cls_file then
-      cls_file:write(cls_content)
-      cls_file:close()
+    local cls_file_handle = io.open(class_file, "w")
+    if cls_file_handle then
+      cls_file_handle:write(cls_content)
+      cls_file_handle:close()
     end
     local meta_file_handle = io.open(meta_file, "w")
     if meta_file_handle then
@@ -243,6 +245,7 @@ export default class %s extends LightningElement {
     print("✅ Created LWC component: " .. name)
   end
 
+  -- Create user commands
   vim.api.nvim_create_user_command("SfCreateClass", function(cmd_opts)
     local name = cmd_opts.args
     if name == "" then
@@ -282,6 +285,7 @@ export default class %s extends LightningElement {
     end
   end, { nargs = "?", desc = "Create new LWC component" })
 
+  -- Salesforce keymaps
   keymap.set("n", "<leader>sdo", ":!sf org open<CR>", vim.tbl_extend("force", opts, { desc = "Open Salesforce Org" }))
   keymap.set("n", "<leader>sds", ":!sf project deploy start<CR>", vim.tbl_extend("force", opts, { desc = "Deploy to Org" }))
   keymap.set("n", "<leader>sdr", ":!sf project retrieve start<CR>", vim.tbl_extend("force", opts, { desc = "Retrieve from Org" }))
@@ -320,6 +324,7 @@ export default class %s extends LightningElement {
     vim.fn.system("open " .. url)
   end, vim.tbl_extend("force", opts, { desc = "Open Salesforce Documentation" }))
 
+  -- Salesforce autocommands
   local salesforce_group = vim.api.nvim_create_augroup("SalesforceGroup", { clear = true })
   vim.api.nvim_create_autocmd("FileType", {
     group = salesforce_group,
@@ -414,6 +419,7 @@ export default class %s extends LightningElement {
   })
 end
 
+-- Global Salesforce commands (available everywhere)
 vim.api.nvim_create_user_command("SfDeploy", function()
   vim.cmd("!sf project deploy start")
 end, { desc = "Deploy current project to Salesforce org" })
