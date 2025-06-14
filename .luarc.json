@@ -1,0 +1,25 @@
+{
+  "runtime": {
+    "version": "LuaJIT",
+    "path": [
+      "?.lua",
+      "?/init.lua",
+      "${VIMRUNTIME}/lua/?.lua",
+      "${VIMRUNTIME}/lua/?/init.lua"
+    ]
+  },
+  "diagnostics": {
+    "globals": ["vim", "Snacks"]
+  },
+  "workspace": {
+    "library": {
+      "${VIMRUNTIME}": true,
+      "${HOME}/.config/nvim": true
+    },
+    "checkThirdParty": false
+  },
+  "telemetry": {
+    "enable": false
+  }
+}
+
