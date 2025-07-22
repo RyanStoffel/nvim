@@ -40,3 +40,15 @@ vim.opt.conceallevel = 0; -- don't hide markup
 vim.opt.concealcursor = ""; -- don't hide cursor line markup
 vim.opt.lazyredraw = true; -- don't redraw during macros
 vim.opt.synmaxcol = 300; -- syntax highlighting limit
+
+-- file handling settings
+vim.opt.backup = false; -- don't create backup files
+vim.opt.writebackup = false; -- don't create backup files before writing
+vim.opt.swapfile = false; -- don't create swap files
+vim.opt.undofile = true; -- persistent undo
+vim.opt.undodir = vim.fn.expand("~/.vim/undodir"); -- undo directory
+vim.opt.updatetime = 300; -- faster completion
+vim.opt.timeoutlen = 500; -- key timeout duration
+vim.opt.ttimeoutlen = 0; -- key code timeout
+vim.opt.autoread = true; -- auto reload files saved outside nvim
+vim.opt.autowrite = false; -- don't auto save
