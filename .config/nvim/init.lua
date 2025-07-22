@@ -26,3 +26,17 @@ vim.opt.smartcase = true; -- case sensitive if upper case in search
 vim.opt.hlsearch = false; -- dont highlight results
 vim.opt.incsearch = true; -- show matches as you type
 
+-- visual settings
+vim.opt.termguicolors = true; -- enable 24-bit colors
+vim.opt.showmatch = true; -- highlight matching brackets
+vim.opt.matchtime = 2; -- how long to highligh matching brackets
+vim.opt.cmdheight = 1; -- command line height
+vim.opt.completeopt = "menuone,noinsert,noselect"; -- completion options
+vim.opt.showmode = false; -- dont show mode in command line
+vim.opt.pumheight = 10; -- pop up menu height
+vim.opt.pumblend = 10; -- pop up menu transparency
+vim.opt.winblend = 0; -- floating window transparency
+vim.opt.conceallevel = 0; -- don't hide markup
+vim.opt.concealcursor = ""; -- don't hide cursor line markup
+vim.opt.lazyredraw = true; -- don't redraw during macros
+vim.opt.synmaxcol = 300; -- syntax highlighting limit
