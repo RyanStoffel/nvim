@@ -20,3 +20,9 @@ vim.opt.smartindent = true; -- smart auto indenting
 vim.opt.expandtab = true; -- use spaces instead of tabs 
 vim.opt.autoindent = true; -- copy indent from current line
 
+-- search settings
+vim.opt.ignorecase = true; -- case insensitive search
+vim.opt.smartcase = true; -- case sensitive if upper case in search
+vim.opt.hlsearch = false; -- dont highlight results
+vim.opt.incsearch = true; -- show matches as you type
+
