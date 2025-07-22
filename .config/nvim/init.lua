@@ -52,3 +52,16 @@ vim.opt.timeoutlen = 500; -- key timeout duration
 vim.opt.ttimeoutlen = 0; -- key code timeout
 vim.opt.autoread = true; -- auto reload files saved outside nvim
 vim.opt.autowrite = false; -- don't auto save
+
+-- behavior settings
+vim.opt.hidden = true; -- allow hidden buffers
+vim.opt.errorbells = false; -- no error bells
+vim.opt.backspace = "indent,eol,start"; -- better backsapce behavior
+vim.opt.autochdir = false; -- don't auto change directory
+vim.opt.iskeyword:append("-"); -- treat dash as part of word
+vim.opt.path:append("**"); -- include subdirectories in search
+vim.opt.selection = "exclusive"; -- selection behavior
+vim.opt.mouse = "a"; -- enable mouse support
+vim.opt.clipboard:append("unnamedplus"); -- use system clipboard
+vim.opt.modifiable = true; -- allow buffer modifications
+vim.opt.encoding = "UTF-8"; -- set encoding
