@@ -1,5 +1,23 @@
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+vim.opt.rtp:prepend(lazypath)
+
+require("lazy").setup({
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    priority = 1000,  -- load early
+    config = function()
+      require("catppuccin").setup({
+        flavour = "mocha",
+        transparent_background = true,
+      })
+      vim.cmd.colorscheme("catppuccin")
+    end,
+  },
+})
+
+
 -- colortheme & transparency settings
-vim.cmd.colorscheme("default");
 vim.api.nvim_set_hl(0, "Normal", { bg = "none" });
 vim.api.nvim_set_hl(0, "NormalNC", { bg = "none" });
 vim.api.nvim_set_hl(0, "EndOfBuffer", { bg = "none" });
