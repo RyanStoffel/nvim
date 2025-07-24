@@ -3,6 +3,7 @@ vim.cmd.colorscheme("default");
 vim.api.nvim_set_hl(0, "Normal", { bg = "none" });
 vim.api.nvim_set_hl(0, "NormalNC", { bg = "none" });
 vim.api.nvim_set_hl(0, "EndOfBuffer", { bg = "none" });
+vim.g.loaded_nvim_treesitter = 1;
 
 -- basic settings
 vim.opt.number = true; -- line numbers
@@ -386,3 +387,465 @@ local function setup_dynamic_statusline()
 end
 
 setup_dynamic_statusline();
+
+-- Enhanced LSP configuration for multiple languages
+-- Add this to your existing init.lua file, replacing your current LSP setup
+
+-- Function to find project root (enhanced version)
+local function find_root(patterns)
+  local path = vim.fn.expand('%:p:h')
+  local root = vim.fs.find(patterns, { path = path, upward = true })[1]
+  return root and vim.fn.fnamemodify(root, ':h') or path
+end
+
+-- Apex LSP setup (Salesforce)
+local function setup_apex_lsp()
+  -- Note: You'll need to install the Salesforce CLI and apex-jorje-lsp
+  vim.lsp.start({
+    name = 'apex_ls',
+    cmd = { 'apex-jorje-lsp' },
+    filetypes = { 'apex' },
+    root_dir = find_root({ 'sfdx-project.json', '.sfdx', 'force-app', '.git' }),
+    settings = {
+      apex = {
+        enable = true,
+        jdwp = {
+          enable = false
+        }
+      }
+    }
+  })
+end
+
+-- TypeScript/JavaScript LSP setup
+local function setup_typescript_lsp()
+  vim.lsp.start({
+    name = 'ts_ls',
+    cmd = { 'typescript-language-server', '--stdio' },
+    filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'tsx', 'jsx' },
+    root_dir = find_root({ 'package.json', 'tsconfig.json', 'jsconfig.json', '.git' }),
+    settings = {
+      typescript = {
+        inlayHints = {
+          includeInlayParameterNameHints = 'all',
+          includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+          includeInlayFunctionParameterTypeHints = true,
+          includeInlayVariableTypeHints = true,
+          includeInlayPropertyDeclarationTypeHints = true,
+          includeInlayFunctionLikeReturnTypeHints = true,
+          includeInlayEnumMemberValueHints = true,
+        }
+      },
+      javascript = {
+        inlayHints = {
+          includeInlayParameterNameHints = 'all',
+          includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+          includeInlayFunctionParameterTypeHints = true,
+          includeInlayVariableTypeHints = true,
+          includeInlayPropertyDeclarationTypeHints = true,
+          includeInlayFunctionLikeReturnTypeHints = true,
+          includeInlayEnumMemberValueHints = true,
+        }
+      }
+    }
+  })
+end
+
+-- HTML LSP setup
+local function setup_html_lsp()
+  vim.lsp.start({
+    name = 'html',
+    cmd = { 'vscode-html-language-server', '--stdio' },
+    filetypes = { 'html' },
+    root_dir = find_root({ 'package.json', '.git' }),
+    settings = {
+      html = {
+        format = {
+          templating = true,
+          wrapLineLength = 120,
+          wrapAttributes = 'auto',
+        },
+        hover = {
+          documentation = true,
+          references = true,
+        }
+      }
+    }
+  })
+end
+
+-- CSS LSP setup with Tailwind support
+local function setup_css_lsp()
+  vim.lsp.start({
+    name = 'cssls',
+    cmd = { 'vscode-css-language-server', '--stdio' },
+    filetypes = { 'css', 'scss', 'less' },
+    root_dir = find_root({ 'package.json', '.git' }),
+    settings = {
+      css = {
+        validate = true,
+        lint = {
+          unknownAtRules = "ignore"
+        }
+      },
+      scss = {
+        validate = true,
+        lint = {
+          unknownAtRules = "ignore"
+        }
+      },
+      less = {
+        validate = true,
+        lint = {
+          unknownAtRules = "ignore"
+        }
+      }
+    }
+  })
+end
+
+-- Tailwind CSS LSP setup
+local function setup_tailwindcss_lsp()
+  vim.lsp.start({
+    name = 'tailwindcss',
+    cmd = { 'tailwindcss-language-server', '--stdio' },
+    filetypes = { 'html', 'css', 'scss', 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'vue', 'svelte' },
+    root_dir = find_root({ 'tailwind.config.js', 'tailwind.config.ts', 'tailwind.config.cjs', 'package.json', '.git' }),
+    settings = {
+      tailwindCSS = {
+        experimental = {
+          classRegex = {
+            "tw`([^`]*)",
+            "tw=\"([^\"]*)",
+            "tw={\"([^\"}]*)",
+            "tw\\.\\w+`([^`]*)",
+            "tw\\(.*?\\)`([^`]*)",
+          },
+        },
+      },
+    }
+  })
+end
+
+-- C/C++ LSP setup
+local function setup_cpp_lsp()
+  vim.lsp.start({
+    name = 'clangd',
+    cmd = { 'clangd', '--background-index', '--clang-tidy', '--header-insertion=iwyu', '--completion-style=detailed', '--function-arg-placeholders' },
+    filetypes = { 'c', 'cpp', 'objc', 'objcpp', 'cuda', 'proto' },
+    root_dir = find_root({ 'compile_commands.json', 'compile_flags.txt', '.clangd', '.git', 'Makefile', 'CMakeLists.txt' }),
+    settings = {
+      clangd = {
+        arguments = {
+          "--header-insertion=iwyu",
+          "--completion-style=detailed",
+          "--function-arg-placeholders",
+          "--fallback-style=llvm"
+        }
+      }
+    }
+  })
+end
+
+-- C# LSP setup
+local function setup_csharp_lsp()
+  vim.lsp.start({
+    name = 'omnisharp',
+    cmd = { 'omnisharp', '--languageserver', '--hostPID', tostring(vim.fn.getpid()) },
+    filetypes = { 'cs' },
+    root_dir = find_root({ '*.sln', '*.csproj', 'omnisharp.json', 'function.json', '.git' }),
+    settings = {
+      FormattingOptions = {
+        EnableEditorConfigSupport = true,
+        OrganizeImports = true,
+      },
+      MsBuild = {
+        LoadProjectsOnDemand = nil,
+      },
+      RoslynExtensionsOptions = {
+        EnableAnalyzersSupport = true,
+        EnableImportCompletion = true,
+      },
+    }
+  })
+end
+
+-- Java LSP setup
+local function setup_java_lsp()
+  -- Note: Requires Eclipse JDT Language Server
+  local jdtls_path = vim.fn.expand('~/.local/share/eclipse.jdt.ls')
+  local workspace_path = vim.fn.expand('~/.local/share/eclipse.jdt.ls/workspace')
+  
+  vim.lsp.start({
+    name = 'jdtls',
+    cmd = {
+      'java',
+      '-Declipse.application=org.eclipse.jdt.ls.core.id1',
+      '-Dosgi.bundles.defaultStartLevel=4',
+      '-Declipse.product=org.eclipse.jdt.ls.core.product',
+      '-Dlog.protocol=true',
+      '-Dlog.level=ALL',
+      '-Xms1g',
+      '-Xmx2G',
+      '--add-modules=ALL-SYSTEM',
+      '--add-opens', 'java.base/java.util=ALL-UNNAMED',
+      '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
+      '-jar', jdtls_path .. '/plugins/org.eclipse.equinox.launcher_*.jar',
+      '-configuration', jdtls_path .. '/config_linux',
+      '-data', workspace_path,
+    },
+    filetypes = { 'java' },
+    root_dir = find_root({ 'pom.xml', 'build.gradle', '.git', 'mvnw', 'gradlew' }),
+    settings = {
+      java = {
+        signatureHelp = { enabled = true },
+        import = { enabled = true },
+        rename = { enabled = true }
+      }
+    }
+  })
+end
+
+-- SQL LSP setup
+local function setup_sql_lsp()
+  vim.lsp.start({
+    name = 'sqls',
+    cmd = { 'sqls' },
+    filetypes = { 'sql' },
+    root_dir = find_root({ '.sqls.yml', '.git' }),
+    settings = {
+      sqls = {
+        connections = {
+          -- Add your database connections here
+          -- {
+          --   driver = 'mysql',
+          --   dataSourceName = 'user:password@tcp(localhost:3306)/dbname',
+          -- },
+        },
+      },
+    }
+  })
+end
+
+-- SOQL LSP setup (Salesforce Object Query Language)
+local function setup_soql_lsp()
+  -- SOQL support is typically handled by the Apex LSP
+  -- But we can set up basic syntax highlighting and completion
+  vim.lsp.start({
+    name = 'apex_ls', -- Same as Apex LSP
+    cmd = { 'apex-jorje-lsp' },
+    filetypes = { 'soql' },
+    root_dir = find_root({ 'sfdx-project.json', '.sfdx', 'force-app', '.git' }),
+  })
+end
+
+-- Shell LSP setup (your existing function, keeping it here for completeness)
+local function setup_shell_lsp()
+  vim.lsp.start({
+    name = 'bashls',
+    cmd = {'bash-language-server', 'start'},
+    filetypes = {'sh', 'bash', 'zsh'},
+    root_dir = find_root({'.git', 'Makefile'}),
+    settings = {
+      bashIde = {
+        globPattern = "*@(.sh|.inc|.bash|.command)"
+      }
+    }
+  })
+end
+
+-- Python LSP setup (your existing function, keeping it here for completeness)
+local function setup_python_lsp()
+  vim.lsp.start({
+    name = 'pylsp',
+    cmd = {'pylsp'},
+    filetypes = {'python'},
+    root_dir = find_root({'pyproject.toml', 'setup.py', 'setup.cfg', 'requirements.txt', '.git'}),
+    settings = {
+      pylsp = {
+        plugins = { 
+          pycodestyle = {
+              enabled = false
+          },
+          flake8 = {
+              enabled = true,
+          },
+          black = { 
+              enabled = true
+          }
+        }
+      }
+    }
+  })
+end
+
+-- Auto-start LSPs based on filetype
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'apex',
+  callback = setup_apex_lsp,
+  desc = 'Start Apex LSP'
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'javascript,javascriptreact,typescript,typescriptreact,tsx,jsx',
+  callback = setup_typescript_lsp,
+  desc = 'Start TypeScript/JavaScript LSP'
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'html',
+  callback = setup_html_lsp,
+  desc = 'Start HTML LSP'
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'css,scss,less',
+  callback = setup_css_lsp,
+  desc = 'Start CSS LSP'
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'html,css,scss,javascript,javascriptreact,typescript,typescriptreact',
+  callback = setup_tailwindcss_lsp,
+  desc = 'Start Tailwind CSS LSP'
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'c,cpp,objc,objcpp,cuda',
+  callback = setup_cpp_lsp,
+  desc = 'Start C/C++ LSP'
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'cs',
+  callback = setup_csharp_lsp,
+  desc = 'Start C# LSP'
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'java',
+  callback = setup_java_lsp,
+  desc = 'Start Java LSP'
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'sql',
+  callback = setup_sql_lsp,
+  desc = 'Start SQL LSP'
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'soql',
+  callback = setup_soql_lsp,
+  desc = 'Start SOQL LSP'
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'sh,bash,zsh',
+  callback = setup_shell_lsp,
+  desc = 'Start shell LSP'
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'python',
+  callback = setup_python_lsp,
+  desc = 'Start Python LSP'
+})
+
+-- Enhanced formatting function with support for more languages
+local function format_code()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local filename = vim.api.nvim_buf_get_name(bufnr)
+  local filetype = vim.bo[bufnr].filetype
+  
+  -- Save cursor position
+  local cursor_pos = vim.api.nvim_win_get_cursor(0)
+  
+  -- Try LSP formatting first if available
+  local clients = vim.lsp.get_clients({ bufnr = bufnr })
+  if #clients > 0 then
+    for _, client in ipairs(clients) do
+      if client.server_capabilities.documentFormattingProvider then
+        vim.lsp.buf.format({ bufnr = bufnr })
+        print("Formatted with LSP: " .. client.name)
+        return
+      end
+    end
+  end
+  
+  -- Fallback to external formatters
+  if filetype == 'python' or filename:match('%.py$') then
+    if filename == '' then
+      print("Save the file first before formatting Python")
+      return
+    end
+    
+    local black_cmd = "black --quiet " .. vim.fn.shellescape(filename)
+    local black_result = vim.fn.system(black_cmd)
+    
+    if vim.v.shell_error == 0 then
+      vim.cmd('checktime')
+      vim.api.nvim_win_set_cursor(0, cursor_pos)
+      print("Formatted with black")
+      return
+    else
+      print("No Python formatter available (install black)")
+      return
+    end
+  end
+  
+  if filetype == 'sh' or filetype == 'bash' or filename:match('%.sh$') then
+    local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+    local content = table.concat(lines, '\n')
+    
+    local cmd = {'shfmt', '-i', '2', '-ci', '-sr'}
+    local result = vim.fn.system(cmd, content)
+    
+    if vim.v.shell_error == 0 then
+      local formatted_lines = vim.split(result, '\n')
+      if formatted_lines[#formatted_lines] == '' then
+        table.remove(formatted_lines)
+      end
+      vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, formatted_lines)
+      vim.api.nvim_win_set_cursor(0, cursor_pos)
+      print("Shell script formatted with shfmt")
+      return
+    else
+      print("shfmt error: " .. result)
+      return
+    end
+  end
+  
+  -- Add more external formatter support as needed
+  if filetype == 'java' then
+    print("Use LSP formatting or install google-java-format")
+    return
+  end
+  
+  if filetype == 'c' or filetype == 'cpp' then
+    print("Use LSP formatting or install clang-format")
+    return
+  end
+  
+  print("No formatter available for " .. filetype)
+end
+
+-- Update the format command
+vim.api.nvim_create_user_command("FormatCode", format_code, {
+  desc = "Format current file"
+})
+
+-- Set up file type detection for Salesforce files
+vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
+  pattern = "*.cls,*.trigger",
+  callback = function()
+    vim.bo.filetype = "apex"
+  end,
+})
+
+vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
+  pattern = "*.soql",
+  callback = function()
+    vim.bo.filetype = "soql"
+  end,
+})
